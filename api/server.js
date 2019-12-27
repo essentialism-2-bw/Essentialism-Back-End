@@ -17,6 +17,6 @@ server.use('/api/users', authenticate, usersRouter);
 
 server.get("/", function(req, res) {
     res.send("App is working 👍");
-  });
+});
 
 module.exports = server;
