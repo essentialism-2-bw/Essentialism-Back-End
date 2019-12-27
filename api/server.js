@@ -15,4 +15,8 @@ server.use(express.json());
 server.use('/api/auth', authRouter);
 server.use('/api/users', authenticate, usersRouter);
 
+server.get("/", function(req, res) {
+    res.send("App is working 👍");
+  });
+
 module.exports = server;
