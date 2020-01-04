@@ -16,6 +16,13 @@ exports.up = function(knex) {
 
     tbl.string('project_description',511);
 
+    tbl.integer("user_values_id")
+      .unsigned()
+      .references("id")
+      .inTable("user_values")
+      .onDelete("RESTRICT") 
+      .onUpdate("CASCADE");
+
   })
 };
 
