@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 
 const Auth = require('./auth-model');
 
+const {hashRounds,jwtSecret} = require('../constants');
+
 // Middleware
 
 function validateNewUser(req, res, next) {
@@ -42,7 +44,7 @@ function validateReturningUser(req, res, next) {
 
 router.post('/register', validateNewUser, (req, res) => {
     let user = req.body;
-        const hash = bcrypt.hashSync(user.password, 8); // 2 ^ n
+        const hash = bcrypt.hashSync(user.password, hashRounds); // 2 ^ n
         user.password = hash;
 
     Auth.registerUser(user)
@@ -79,10 +81,12 @@ router.post('/login', validateReturningUser, (req, res) => {
 
 function signToken(user) {
     const payload = {
+        user_id: user.id,
         username: user.username,
     };
 
-    const secret = process.env.JWT_SECRET || 'Essentialism Secret 123'
+    // const secret = process.env.JWT_SECRET || 'Essentialism Secret 123'
+    const secret = jwtSecret;
 
     const options = {
         expiresIn: '12h',
