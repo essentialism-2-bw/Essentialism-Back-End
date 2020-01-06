@@ -81,6 +81,7 @@ router.post('/login', validateReturningUser, (req, res) => {
 
 function signToken(user) {
     const payload = {
+        user_id: user.id,
         username: user.username,
     };
 
