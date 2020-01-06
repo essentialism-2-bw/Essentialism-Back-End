@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const Auth = require('./auth-model');
 
-const {hashRounds} = require('../constants');
+const {hashRounds,jwtSecret} = require('../constants');
 
 // Middleware
 
@@ -85,7 +85,8 @@ function signToken(user) {
         username: user.username,
     };
 
-    const secret = process.env.JWT_SECRET || 'Essentialism Secret 123'
+    // const secret = process.env.JWT_SECRET || 'Essentialism Secret 123'
+    const secret = jwtSecret;
 
     const options = {
         expiresIn: '12h',

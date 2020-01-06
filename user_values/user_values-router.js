@@ -116,3 +116,8 @@ router.put('/',
       .json({message:`Logged on with userId ${token_userId}, cannot update data for user with userId ${body_userID}`});
     }
 })
+
+
+// ********************************************************
+// DELETE /api/usrValues/
+// ********************************************************
