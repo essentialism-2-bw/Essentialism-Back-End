@@ -4,6 +4,7 @@ Repository for the back end of the essentialism project
 ## Instructions for Endpoints
 
 **Test if your axios call is working**
+
 GET request to https://essentialism-2.herokuapp.com/
 - [ ] response should be the string "App is working 👍"
 
