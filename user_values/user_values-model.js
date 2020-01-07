@@ -10,18 +10,31 @@ module.exports={
   getUserValues,
   addUserValue,
   getUserValue,
-  updateUserValues
+  updateUserValues,
+  deleteUserValues
 }
 
 
 // ********************************************************
 // getUserValues
-// This get all the values for a given user_id
+// This gets all the values for a given user_id
 // ********************************************************
 function getUserValues(user_id) {
   return db("user_values")
     .select("*")
     .where({user_id});
+}
+
+
+// ********************************************************
+// getUserValue
+// This gets one user_value record based on user_value id
+// ********************************************************
+function getUserValue(id) {
+  return db("user_values")
+  .select("*")
+  .where({id})
+  .first();  
 }
 
 
@@ -38,17 +51,6 @@ function addUserValue(data) {
 
 
 // ********************************************************
-// getUserValue
-// This gets one user_value record based on user_value id
-// ********************************************************
-function getUserValue(id) {
-  return db("user_values")
-  .select("*")
-  .where({id})
-  .first();  
-}
-
-// ********************************************************
 // updateUserValues
 // ********************************************************
 function updateUserValues(data) {
@@ -58,4 +60,14 @@ function updateUserValues(data) {
   .then(count=>{
     return (count>0 ? getUserValue(data.id) : null);
   });  
+}
+
+
+// ********************************************************
+// deleteUserValues
+// ********************************************************
+function deleteUserValues(user_id) {
+  return db("user_values")
+    .where('user_id',user_id)
+    .del();
 }
