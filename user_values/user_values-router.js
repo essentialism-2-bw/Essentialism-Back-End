@@ -11,7 +11,12 @@ const dbUsrVals =  require('./user_values-model');
 // ********************************************************
 // Import custom middleware
 // ********************************************************
-const {validTokenCheck,validBodyCheck,getUserValue,updateUserValues} = require('./user_values-middleware');
+const {
+  validTokenCheck,
+  validBodyCheck,
+  validBodyCheckArray,
+  validUserCheckArray
+} = require('./user_values-middleware');
 
 // ********************************************************
 // Export router
@@ -42,29 +47,52 @@ router.get('/:id',validTokenCheck,(req,res)=>{
 })
 
 // ********************************************************
-// POST /api/usrValues/
+// POST /api/usrValues/  - OLD
+// ********************************************************
+// router.post('/',
+//   validTokenCheck,
+//   validBodyCheck(["user_id","value_name", "color","importance_description"]),
+//   (req,res)=>{
+//     const token_userId = "" + req.token.user_id;
+//     const body_userID = "" + req.body.user_id;
+//     if(token_userId===body_userID) {
+//       dbUsrVals
+//         .addUserValue(req.body)
+//         .then(usrVal=>{
+//           res.status(201).json(usrVal);
+//         })
+//         .catch(err=>{
+//           res.status(500).json({ message: "Error adding the user_value.", error:err });
+//         });
+//     }
+//     else {
+//       res
+//       .status(403)
+//       .json({message:`Logged on with userId ${token_userId}, cannot add data for user with userId ${body_userID}`});
+//     }
+// })
+
+
+// ********************************************************
+// POST /api/usrValues/  
 // ********************************************************
 router.post('/',
   validTokenCheck,
-  validBodyCheck(["user_id","value_name"]),
+  validBodyCheckArray(["user_id","value_name", "color","importance_description"],3),
+  validUserCheckArray,
   (req,res)=>{
-    const token_userId = "" + req.token.user_id;
-    const body_userID = "" + req.body.user_id;
-    if(token_userId===body_userID) {
-      dbUsrVals
-        .addUserValue(req.body)
-        .then(usrVal=>{
-          res.status(201).json(usrVal);
-        })
-        .catch(err=>{
-          res.status(500).json({ message: "Error adding the user_value.", error:err });
-        });
-    }
-    else {
-      res
-      .status(403)
-      .json({message:`Logged on with userId ${token_userId}, cannot add data for user with userId ${body_userID}`});
-    }
+
+
+    dbUsrVals.addUserValue(req.body)
+      .then(usrVals=>{
+        res.status(201).json(usrVals);
+      })
+      .catch(err=>{
+        res.status(500).json({ message: "Error adding the user_values.", error:err });
+      });    
+
+
+
 })
 
 
@@ -73,7 +101,7 @@ router.post('/',
 // ********************************************************
 router.put('/',
   validTokenCheck,
-  validBodyCheck(["user_id","value_name","id"]),
+  validBodyCheck(["user_id","value_name", "color","importance_description"]),
   (req,res)=>{
     const token_userId = "" + req.token.user_id;
     const body_userID = "" + req.body.user_id;

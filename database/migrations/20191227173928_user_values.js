@@ -14,9 +14,11 @@ exports.up = function(knex) {
     tbl.string('value_name',255)
       .notNullable();
 
-    tbl.string('color',255);
+    tbl.string('color',255)
+      .notNullable();
 
-    tbl.string('importance_description',511);
+    tbl.string('importance_description',511)
+      .notNullable();
 
   })
 };

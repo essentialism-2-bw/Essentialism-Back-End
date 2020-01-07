@@ -30,8 +30,10 @@ function getUserValues(user_id) {
 // ********************************************************
 function addUserValue(data) {
   return db("user_values")
-    .insert(data,['id'])
-    .then(([id]) => getUserValue(id));   
+    .insert(data)
+    .then(([id])=>{
+      return (id>0 ? getUserValues(data[0].user_id) : null);
+    });   
 }
 
 
