@@ -49,7 +49,9 @@ router.post('/register', validateNewUser, (req, res) => {
 
     Auth.registerUser(user)
         .then(saved => {
-        res.status(201).json(saved);
+// Made change here to send token with the register response
+            const token = signToken(saved);
+            res.status(201).json({id:saved.id,username:saved.username,token:token});
         })
         .catch(error => {
         res.status(500).json({ message: "error registering user", error: error });
@@ -69,6 +71,7 @@ router.post('/login', validateReturningUser, (req, res) => {
             res.status(200).json({
             token,
             message: `Welcome ${user.username}!`,
+            user_id: user.id
             });
         } else {
             res.status(401).json({ message: 'Invalid Credentials' });
@@ -81,6 +84,7 @@ router.post('/login', validateReturningUser, (req, res) => {
 
 function signToken(user) {
     const payload = {
+// Made change here to encode user_id in the token
         user_id: user.id,
         username: user.username,
     };

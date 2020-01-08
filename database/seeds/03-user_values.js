@@ -14,6 +14,11 @@ exports.seed = function(knex) {
           color: 'green', 
           importance_description: 'Reading/watching the news keeps you aware of local/national/international events and how it affects your life.'
         },
+        { user_id: 1, 
+          value_name: 'Curiosity', 
+          color: 'orange', 
+          importance_description: 'Wanting to know is a great motivator for learning'
+        },
         { user_id: 2, 
           value_name: 'Concentration', 
           color: 'red', 
@@ -21,15 +26,35 @@ exports.seed = function(knex) {
         },
         { user_id: 2, 
           value_name: 'Ethical', 
-        },
-        { user_id: 3, 
-          value_name: 'Curiosity', 
-          color: 'orange', 
-          importance_description: 'Wanting to know is a great motivator for learning'
-        },
-        { user_id: 3, 
+          color: 'grey', 
+          importance_description: 'Always do the right thing'
+        },        
+        { user_id: 2, 
           value_name: 'Hard work', 
+          color: 'brown', 
+          importance_description: 'Along with luck gets you what you want'
         },
+
+
+/*
+        { "user_id": 3, 
+          "value_name": "valueA_ForUsr3", 
+          "color": "yellowA", 
+          "importance_description": "A is first letter"
+        },
+        { "user_id": 3, 
+          "value_name": "valueB_ForUsr3", 
+          "color": "yellowB", 
+          "importance_description": "B is second letter"
+        },        
+        { "user_id": 3, 
+          "value_name": "valueC_ForUsr3", 
+          "color": "yellowC", 
+          "importance_description": "C is third letter"
+        }
+*/
+
+
       ]);
     });
 };
