@@ -22,6 +22,9 @@ exports.up = function(knex) {
       .inTable("user_values")
       .onDelete("RESTRICT") 
       .onUpdate("CASCADE");
+      
+    tbl.boolean('completed')
+      .defaultTo(false);
 
   })
 };
