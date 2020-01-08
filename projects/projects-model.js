@@ -1,3 +1,4 @@
+const knex = require('knex');
 const db = require('../database/dbConfig');
 
 module.exports={
@@ -10,13 +11,15 @@ module.exports={
 
 function getUserProjects(user_id) {
     return db("projects")
-        .select("id", "user_id", "project_title", "project_description", "user_values_id")
+        .select("id", "user_id", "project_title", "project_description", "user_values_id",
+        knex.raw(`(case when projects.completed = 0 then 'false' else 'true' end) as completed`))
         .where({ user_id });
 }
 
 function getProjectByID(id) {
     return db("projects")
-    .select("id", "user_id", "project_title", "project_description", "user_values_id")
+    .select("id", "user_id", "project_title", "project_description", "user_values_id",
+    knex.raw(`(case when projects.completed = 0 then 'false' else 'true' end) as completed`))
         .where({ id })
         .first();
 }
