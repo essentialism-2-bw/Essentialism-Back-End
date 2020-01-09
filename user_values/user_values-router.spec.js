@@ -50,6 +50,22 @@ function cloneData() {
   return temp;
 }
 
+function checkSame(obj1,obj2) {
+  let isSame = true;
+  Object.keys(obj1).forEach(obj1Key=>{
+    if(obj1[obj1Key]!==obj2[obj1Key]) {
+      isSame = false;
+    }
+  })
+
+  // The size check will be done on an individual basis and not for all
+  // sameness checks 
+  // if(Object.keys(obj1).length!==Object.keys(obj2).length) {
+  //   isSame = false;
+  // }
+  return isSame;
+}
+
 
 // ****************************************************
 // Create a user for subsequent tests
@@ -279,10 +295,10 @@ for(let index=0; index<3; index++) {
 
 // ****************************************************
 // 8 - userValues table: POST /api/usrValues 
-// Successfully add record to uver_Values table
+// Successfully add record to user_Values table
 // ****************************************************
 describe(`8 - userValues table: POST /api/usrValues`,()=>{
-  it(`Successfully add record to uver_Values table`,()=>{
+  it(`Successfully add record to user_Values table`,()=>{
     return request(server)
       .post("/api/usrValues")
       .set('Authorization', `${testToken}`)
@@ -292,6 +308,68 @@ describe(`8 - userValues table: POST /api/usrValues`,()=>{
         expect(res.body.length).toBe(3);
         testUserValueId = res.body[0].id;
         // console.log("testUserValueId is",testUserValueId);
+        // console.log("res.body :",res.body);
+        // console.log("postData :",postData);
+        for(let i=0; i<3; i++) {
+          expect(checkSame(postData[i],res.body[i])).toBe(true);
+        }
+      })
+  })
+})
+
+
+// ****************************************************
+// 17 - userValues table: GET /api/usrValues/:id 
+// Error with bad token
+// ****************************************************
+describe(`17 - userValues table: GET /api/usrValues/:id`,()=>{
+  it(`Error with bad token`,()=>{
+    return request(server)
+      .get(`/api/usrValues/${testId}`)
+      .set('Authorization', `noGoodToken`)
+      .then(res=>{
+        expect(res.status).toBe(401);
+        expect(res.body.message).toBe("Invalid Token");
+      })
+  })
+})
+
+
+// ****************************************************
+// 18 - userValues table: GET /api/usrValues/:id 
+// Error if user_id in url is not of logged in user
+// ****************************************************
+describe(`18 - userValues table: GET /api/usrValues/:id`,()=>{
+  it(`Error if user_id in url is not of logged in user`,()=>{
+    return request(server)
+      .get(`/api/usrValues/1234`)
+      .set('Authorization', `${testToken}`)
+      .then(res=>{
+        expect(res.status).toBe(403);
+        expect(res.body.message).toBe(`Logged on with userId ${testId}, cannot get data on user with userId 1234`);
+      })
+  })
+})
+
+
+// ****************************************************
+// 19 - userValues table: GET /api/usrValues/:id 
+// Successfully get records from user_Values table
+// ****************************************************
+describe(`19 - userValues table: GET /api/usrValues/:id`,()=>{
+  it(`Successfully get records from user_Values table`,()=>{
+    return request(server)
+      .get(`/api/usrValues/${testId}`)
+      .set('Authorization', `${testToken}`)
+      .then(res=>{
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toBe(3);
+        // console.log("res.body :",res.body);
+        // console.log("postData :",postData);
+        for(let i=0; i<3; i++) {
+          expect(checkSame(postData[i],res.body[i])).toBe(true);
+        }
       })
   })
 })
@@ -320,13 +398,14 @@ describe(`9 - userValues table: PUT /api/usrValues`,()=>{
 // Error if value_name is not in the object body
 // ****************************************************
 describe(`10 - userValues table: PUT /api/usrValues`,()=>{
-  it(`Error if user_id is not in the object body`,()=>{
+  it(`Error if value_name is not in the object body`,()=>{
 
-    let reqData = cloneData()[0];
+    let reqData = {...cloneData()[0]};
     delete reqData.value_name;
     reqData.NOTvalue_name = "NOT THERE";
     reqData.id = testUserValueId;
     // console.log("reqData is:",reqData);
+    // console.log("postdata is:",postData);
 
     return request(server)
       .put("/api/usrValues")
@@ -340,7 +419,212 @@ describe(`10 - userValues table: PUT /api/usrValues`,()=>{
 })
 
 
+// ****************************************************
+// 11 - userValues table: PUT /api/usrValues 
+// Error if user_id is not in the object body
+// ****************************************************
+describe(`11 - userValues table: PUT /api/usrValues`,()=>{
+  it(`Error if user_id is not in the object body`,()=>{
+
+    let reqData = {...cloneData()[0]};
+    delete reqData.user_id;
+    reqData.NOTuser_id = "NOT THERE";
+    reqData.id = testUserValueId;
+    // console.log("reqData is:",reqData);
+    // console.log("postdata is:",postData);
+
+    return request(server)
+      .put("/api/usrValues")
+      .set('Authorization', `${testToken}`)
+      .send(reqData)
+      .then(res=>{
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("missing field user_id in request body");
+      })
+  })
+})
 
 
+// ****************************************************
+// 12 - userValues table: PUT /api/usrValues 
+// Error if color is not in the object body
+// ****************************************************
+describe(`12 - userValues table: PUT /api/usrValues`,()=>{
+  it(`Error if color is not in the object body`,()=>{
 
+    let reqData = {...cloneData()[0]};
+    delete reqData.color;
+    reqData.NOTcolor = "NOT THERE";
+    reqData.id = testUserValueId;
+    // console.log("reqData is:",reqData);
+    // console.log("postdata is:",postData);
+
+    return request(server)
+      .put("/api/usrValues")
+      .set('Authorization', `${testToken}`)
+      .send(reqData)
+      .then(res=>{
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("missing field color in request body");
+      })
+  })
+})
+
+
+// ****************************************************
+// 13 - userValues table: PUT /api/usrValues 
+// Error if importance_description is not in the object body
+// ****************************************************
+describe(`13 - userValues table: PUT /api/usrValues`,()=>{
+  it(`Error if importance_description is not in the object body`,()=>{
+
+    let reqData = {...cloneData()[0]};
+    delete reqData.importance_description;
+    reqData.NOTimportance_description = "NOT THERE";
+    reqData.id = testUserValueId;
+    // console.log("reqData is:",reqData);
+    // console.log("postdata is:",postData);
+
+    return request(server)
+      .put("/api/usrValues")
+      .set('Authorization', `${testToken}`)
+      .send(reqData)
+      .then(res=>{
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("missing field importance_description in request body");
+      })
+  })
+})
+
+
+// ****************************************************
+// 14 - userValues table: PUT /api/usrValues 
+// Error if id is not in the object body
+// ****************************************************
+describe(`14 - userValues table: PUT /api/usrValues`,()=>{
+  it(`Error if id is not in the object body`,()=>{
+
+    let reqData = {...cloneData()[0]};
+    reqData.NOid = testUserValueId;
+    // console.log("reqData is:",reqData);
+    // console.log("postdata is:",postData);
+
+    return request(server)
+      .put("/api/usrValues")
+      .set('Authorization', `${testToken}`)
+      .send(reqData)
+      .then(res=>{
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("missing field id in request body");
+      })
+  })
+})
+
+
+// ****************************************************
+// 15 - userValues table: PUT /api/usrValues 
+// Error if user_id in body object is not of logged in user
+// ****************************************************
+describe(`15 - userValues table: PUT /api/usrValues`,()=>{
+  it(`Error if user_id in body object is not of logged in user`,()=>{
+
+    let reqData = {...cloneData()[0]};
+    reqData.user_id = 1234;
+    reqData.id = testUserValueId;
+    // console.log("reqData is:",reqData);
+    // console.log("postdata is:",postData);
+
+    return request(server)
+      .put("/api/usrValues")
+      .set('Authorization', `${testToken}`)
+      .send(reqData)
+      .then(res=>{
+        expect(res.status).toBe(403);
+        expect(res.body.message).toBe(`Logged on with userId ${testId}, cannot update data for user with userId 1234`);
+      })
+  })
+})
+
+
+// ****************************************************
+// 16 - userValues table: PUT /api/usrValues 
+// Successfully modify record to user_Values table
+// ****************************************************
+describe(`16 - userValues table: PUT /api/usrValues`,()=>{
+  it(`Successfully modify record to user_Values table`,()=>{
+
+    let reqData = {...cloneData()[0]};
+    reqData.id = testUserValueId;
+    reqData.color = "MODIFIED"
+    // console.log("reqData is:",reqData);
+    // console.log("postdata is:",postData);
+
+    return request(server)
+      .put("/api/usrValues")
+      .set('Authorization', `${testToken}`)
+      .send(reqData)
+      .then(res=>{
+        expect(res.status).toBe(200);
+        expect(typeof(res.body)).toBe("object");
+        expect(res.body).not.toBe(null);
+        // console.log("res.body :",res.body);
+        // console.log("reqData :",reqData);
+        expect(checkSame(reqData,res.body)).toBe(true);
+      })
+  })
+})
+
+
+// ****************************************************
+// 20 - userValues table: DEL /api/usrValues 
+// Error with bad token
+// ****************************************************
+describe(`20 - userValues table: DEL /api/usrValues`,()=>{
+  it(`Error with bad token`,()=>{
+    return request(server)
+      .del(`/api/usrValues`)
+      .set('Authorization', `noGoodToken`)
+      .send({user_id:testId})
+      .then(res=>{
+        expect(res.status).toBe(401);
+        expect(res.body.message).toBe("Invalid Token");
+      })
+  })
+})
+
+
+// ****************************************************
+// 21 - userValues table: DEL /api/usrValues 
+// Error if user_id in body object is not of logged in user
+// ****************************************************
+describe(`21 - userValues table: DEL /api/usrValues`,()=>{
+  it(`Error if user_id in body object is not of logged in user`,()=>{
+    return request(server)
+      .del(`/api/usrValues`)
+      .set('Authorization', `${testToken}`)
+      .send({user_id:1234})
+      .then(res=>{
+        expect(res.status).toBe(403);
+        expect(res.body.message).toBe(`Logged on with userId ${testId}, cannot delete for user with userId 1234`);
+      })
+  })
+})
+
+
+// ****************************************************
+// 22 - userValues table: DEL /api/usrValues 
+// Successfully delete records from user_Values table
+// ****************************************************
+describe(`22 - userValues table: DEL /api/usrValues`,()=>{
+  it(`Successfully delete records from user_Values table`,()=>{
+    return request(server)
+      .del(`/api/usrValues`)
+      .set('Authorization', `${testToken}`)
+      .send({user_id:`${testId}`})
+      .then(res=>{
+        expect(res.status).toBe(200);
+        expect(res.body.message).toBe(`Deleted 3 records of user_id ${testId}`);
+      })
+  })
+})
 

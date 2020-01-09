@@ -99,7 +99,7 @@ router.post('/',
 // ********************************************************
 router.put('/',
   validTokenCheck,
-  validBodyCheck(["user_id","value_name", "color","importance_description"]),
+  validBodyCheck(["user_id","value_name", "color","importance_description","id"]),
   (req,res)=>{
     const token_userId = "" + req.token.user_id;
     const body_userID = "" + req.body.user_id;
