@@ -20,7 +20,7 @@ exports.up = function(knex) {
       .unsigned()
       .references("id")
       .inTable("user_values")
-      .onDelete("RESTRICT") 
+      .onDelete("CASCADE") 
       .onUpdate("CASCADE");
       
     tbl.boolean('completed')
